@@ -15,10 +15,25 @@ router.get('/', (req, res) => {
       },
       {
         model: Tag,
-        attributes: ['id', 'name']
+        attributes: ['id', 'tag_name'],
+        include: {
+          model: ProductTag,
+          attributes: ['id', 'product_id', 'tag_id']
+        }
       }
     ]
   })
+  .then(dbProductData => {
+    if (!dbProductData) {
+      res.status(404).json({ message: 'No product found with this id' });
+      return;
+    }
+    res.json(dbProductData);
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json(err);
+  });
   // be sure to include its associated Category and Tag data
 });
 
@@ -37,16 +52,20 @@ router.get('/:id', (req, res) => {
       },
       {
         model: Tag,
-        attributes: ['id', 'name']
+        attributes: ['id', 'tag_name'],
+        include: {
+          model: ProductTag,
+          attributes: ['id', 'product_id', 'tag_id']
+        }
       }
     ]
   })
-    .then(dbTagData => {
-      if (!dbTagData) {
+    .then(dbProductData => {
+      if (!dbProductData) {
         res.status(404).json({ message: 'No product found with this id' });
         return;
       }
-      res.json(dbTagData);
+      res.json(dbProductData);
     })
     .catch(err => {
       console.log(err);
