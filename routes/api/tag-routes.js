@@ -11,10 +11,8 @@ router.get('/', (req, res) => {
     include: {
       model: Product,
       attributes: ['id', 'product_name', 'price', 'stock', 'category_id'],
-      include: {
-        model: ProductTag,
-        attributes: ['id', 'product_id', 'tag_id']
-      }
+      through: ProductTag,
+      as: 'products'
     }
   })
     .then(dbTagData => res.json(dbTagData))
@@ -28,32 +26,30 @@ router.get('/:id', (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
   Tag.findOne({
+    attributes: ['id', 'tag_name'],
     where: {
       id: req.params.id
     },
-    attributes: ['id', 'tag_name'],
     include: [
       {
         model: Product,
         attributes: ['id', 'product_name', 'price', 'stock', 'category_id'],
-        include: {
-          model: ProductTag,
-          attributes: ['id', 'product_id', 'tag_id']
-        }
+        through: ProductTag,
+        as: 'products'
       }
     ]
-    })
-      .then(dbTagData => {
-        if (!dbTagData) {
-          res.status(404).json({ message: 'No tag found with this id' });
-          return;
-       }
-        res.json(dbTagData);
-      })
-      .catch(err => {
-        console.log(err);
-        res.status(500).json(err);
-      });
+  })
+  .then(dbTagData => {
+    if (!dbTagData) {
+      res.status(404).json({ message: 'No tag found with this id' });
+      return;
+    }
+    res.json(dbTagData);
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json(err);
+  });
 });
 
 router.post('/', (req, res) => {
@@ -70,18 +66,13 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
   // update a tag's name by its `id` value
-  Tag.update(
-    {
-      tag_name: req.body.tag_name
-    },
-    {
-      where: {
+  Tag.update(req.body, {
+    where: {
       id: req.params.id
-      }
     }
-  )
+  })
     .then(dbTagData => {
-      if (!dbTagData[0]) {
+      if (!dbTagData) {
         res.status(404).json({ message: 'No tag found with this id' });
         return;
       }
