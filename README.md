@@ -4,7 +4,7 @@
   
   Initially just an Express API, backend-buying further develops an e-commerce site utilizing Sequelize to create, synchronize, and interact with a MySQL database. Users can create, update, and delete categories, products, and tags.
 
-  [![Backend-buying walkthrough video](./ORM%20demo.gif)]
+  ![Backend-buying walkthrough video](./ORM%20demo.gif)
 
   ## Demo
 
